@@ -7,7 +7,8 @@ name = "dell-unity-mcp-server"
 version = "1.0.0"
 description = "Model Context Protocol (MCP) server for Dell Unity Storage Systems"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"
+license-files = ["LICENSE"]
 authors = [
     {name = "Dell Technologies", email = "support@dell.com"}
 ]
@@ -29,7 +30,6 @@ classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Developers",
     "Intended Audience :: System Administrators",
-    "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3.10",

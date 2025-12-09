@@ -1,6 +1,9 @@
 # Dell Unity MCP Server
 
-[![Python Version](https://img.shields.io/badge/python-3.10%20%7C%203.11%20%7C%203.12%20%7C%203.13-blue)](https://www.python.org/)
+[![PyPI version](https://img.shields.io/pypi/v/dell-unity-mcp-server.svg)](https://pypi.org/project/dell-unity-mcp-server/)
+[![PyPI downloads](https://img.shields.io/pypi/dm/dell-unity-mcp-server.svg)](https://pypi.org/project/dell-unity-mcp-server/)
+[![CI](https://github.com/dell/dell-unity-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/dell/dell-unity-mcp-server/actions/workflows/ci.yml)
+[![Python Version](https://img.shields.io/pypi/pyversions/dell-unity-mcp-server.svg)](https://pypi.org/project/dell-unity-mcp-server/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/astral-sh/ruff/main/assets/badge/v2.json)](https://github.com/astral-sh/ruff)
@@ -49,6 +52,14 @@ python -m unity_mcp.main
 ```
 
 ## 📦 Installation
+
+### From Source
+
+### From PyPI (Recommended)
+
+```bash
+pip install dell-unity-mcp-server
+```
 
 ### From Source
 

@@ -25,7 +25,11 @@ venv/
 .venv/
 ENV/
 env/
+
+# Environment files with secrets
 .env
+.env.local
+.env.*.local
 
 # IDE
 .idea/
@@ -48,6 +52,15 @@ htmlcov/
 
 # Logs
 *.log
+doc.log
+
+# Temporary files
+*.tmp
+*.bak
+overview.json
+
+# Spec files (large, generated)
+# spec.yml  # Kept in dev/ folder
 logs/
 
 # Local configuration (credentials)
