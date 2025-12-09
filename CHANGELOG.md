@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.2] - 2024-12-09
+
+### Fixed
+- Fixed mypy type errors (13 issues)
+- Added `types-PyYAML` to dev dependencies for mypy type checking
+- Fixed lazy app loading to avoid config load at import time (test compatibility)
+- Fixed ASGI app wrapper to use proper async class instead of function
+- All type annotations now pass strict mypy checking
+
 ## [1.0.1] - 2024-12-09
 
 ### Fixed

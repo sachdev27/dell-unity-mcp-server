@@ -558,21 +558,27 @@ def get_app() -> ASGIApp:
     return create_app()
 
 
-# Lazy app instance - only created when accessed
-_app: ASGIApp | None = None
-
-
-def app(
-    scope: dict[str, Any],
-    receive: Callable[[], Awaitable[dict[str, Any]]],
-    send: Callable[[dict[str, Any]], Awaitable[None]],
-) -> Awaitable[None]:
-    """ASGI app entry point that lazily creates the real app.
+class LazyApp:
+    """Lazy-loading ASGI app wrapper.
 
     This allows the module to be imported without requiring
-    environment variables to be set.
+    environment variables to be set. The real app is only
+    created on first request.
     """
-    global _app
-    if _app is None:
-        _app = create_app()
-    return _app(scope, receive, send)
+
+    def __init__(self) -> None:
+        self._app: ASGIApp | None = None
+
+    async def __call__(
+        self,
+        scope: dict[str, Any],
+        receive: Callable[[], Awaitable[dict[str, Any]]],
+        send: Callable[[dict[str, Any]], Awaitable[None]],
+    ) -> None:
+        if self._app is None:
+            self._app = create_app()
+        await self._app(scope, receive, send)
+
+
+# Lazy app instance for uvicorn
+app = LazyApp()
