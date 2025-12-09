@@ -8,8 +8,8 @@ from typing import Any
 
 import pytest
 
+from unity_mcp.exceptions import OpenAPILoadError, OpenAPIParseError
 from unity_mcp.tool_generator import ToolGenerator, load_openapi_spec
-from unity_mcp.exceptions import OpenAPILoadError
 
 
 class TestToolGenerator:
@@ -147,7 +147,7 @@ paths: {}
         spec_file = tmp_path / "invalid.json"
         spec_file.write_text("not valid json {{{")
 
-        with pytest.raises(Exception):  # OpenAPIParseError or yaml error
+        with pytest.raises((OpenAPILoadError, OpenAPIParseError, ValueError, json.JSONDecodeError)):
             load_openapi_spec(str(spec_file))
 
 

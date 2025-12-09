@@ -16,20 +16,18 @@ Example:
 from __future__ import annotations
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 import mcp.types as types
 from mcp.server.lowlevel import Server
-from mcp.server.models import InitializationOptions
 
 from .api_client import UnityAPIClient
 from .config import Config
 from .exceptions import (
     InvalidToolArgumentsError,
     OpenAPILoadError,
-    UnityAPIError,
-    ToolExecutionError,
     ToolNotFoundError,
+    UnityAPIError,
 )
 from .logging_config import get_logger
 from .tool_generator import ToolGenerator, load_openapi_spec
@@ -92,7 +90,7 @@ class UnityMCPServer:
         self.server = Server("dell-unity-mcp-server")
 
         self.tools: list[dict[str, Any]] = []
-        self.tool_generator: Optional[ToolGenerator] = None
+        self.tool_generator: ToolGenerator | None = None
         self._initialized = False
 
         # Register handlers
@@ -368,7 +366,7 @@ class UnityMCPServer:
 
         return api_params
 
-    def _get_path_for_tool(self, tool_name: str) -> Optional[str]:
+    def _get_path_for_tool(self, tool_name: str) -> str | None:
         """Get API path for a tool by matching against OpenAPI spec.
 
         Args:

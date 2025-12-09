@@ -13,7 +13,7 @@ Example:
     ...     logger.error(f"MCP operation failed: {e}")
 """
 
-from typing import Any, Optional
+from typing import Any
 
 
 class UnityMCPError(Exception):
@@ -28,7 +28,7 @@ class UnityMCPError(Exception):
         details: Optional dictionary with additional error context.
     """
 
-    def __init__(self, message: str, details: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, message: str, details: dict[str, Any] | None = None) -> None:
         """Initialize the exception.
 
         Args:
@@ -90,8 +90,8 @@ class EnvironmentVariableError(ConfigurationError):
     def __init__(
         self,
         variable_name: str,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -124,9 +124,9 @@ class UnityAPIError(UnityMCPError):
     def __init__(
         self,
         message: str,
-        status_code: Optional[int] = None,
-        response_body: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        status_code: int | None = None,
+        response_body: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -158,8 +158,8 @@ class AuthenticationError(UnityAPIError):
     def __init__(
         self,
         host: str,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -182,9 +182,9 @@ class ConnectionError(UnityAPIError):
     def __init__(
         self,
         host: str,
-        original_error: Optional[Exception] = None,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        original_error: Exception | None = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -229,9 +229,9 @@ class RateLimitError(UnityAPIError):
 
     def __init__(
         self,
-        retry_after: Optional[int] = None,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        retry_after: int | None = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -274,8 +274,8 @@ class ToolNotFoundError(ToolError):
     def __init__(
         self,
         tool_name: str,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -303,9 +303,9 @@ class ToolExecutionError(ToolError):
     def __init__(
         self,
         tool_name: str,
-        original_error: Optional[Exception] = None,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        original_error: Exception | None = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -342,10 +342,10 @@ class InvalidToolArgumentsError(ToolError):
     def __init__(
         self,
         tool_name: str,
-        missing_args: Optional[list[str]] = None,
-        invalid_args: Optional[dict[str, str]] = None,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        missing_args: list[str] | None = None,
+        invalid_args: dict[str, str] | None = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -402,9 +402,9 @@ class OpenAPILoadError(OpenAPIError):
     def __init__(
         self,
         file_path: str,
-        original_error: Optional[Exception] = None,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        original_error: Exception | None = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 
@@ -438,9 +438,9 @@ class OpenAPIParseError(OpenAPIError):
     def __init__(
         self,
         file_path: str,
-        original_error: Optional[Exception] = None,
-        message: Optional[str] = None,
-        details: Optional[dict[str, Any]] = None,
+        original_error: Exception | None = None,
+        message: str | None = None,
+        details: dict[str, Any] | None = None,
     ) -> None:
         """Initialize the exception.
 

@@ -2,15 +2,14 @@
 
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
 import pytest
 
 from unity_mcp.config import (
     Config,
-    UnityConfig,
     ServerConfig,
+    UnityConfig,
     load_config,
 )
 from unity_mcp.exceptions import ConfigurationError, EnvironmentVariableError

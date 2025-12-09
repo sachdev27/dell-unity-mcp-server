@@ -7,6 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.1] - 2024-12-09
+
+### Fixed
+- Fixed all ruff linting errors (68 issues)
+- Updated type annotations to use modern `X | None` syntax instead of `Optional[X]`
+- Fixed import sorting across all modules
+- Removed unused imports
+- Updated pyproject.toml to use new `[tool.ruff.lint]` section format
+- Fixed test for invalid JSON to use correct exception types
+
 ## [1.0.0] - 2024-12-09
 
 ### Added

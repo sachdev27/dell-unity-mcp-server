@@ -7,12 +7,12 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from unity_mcp.config import Config, UnityConfig, ServerConfig
-from unity_mcp.server import UnityMCPServer, EXCLUDED_PARAMS
+from unity_mcp.config import Config, ServerConfig, UnityConfig
 from unity_mcp.exceptions import (
     InvalidToolArgumentsError,
     ToolNotFoundError,
 )
+from unity_mcp.server import EXCLUDED_PARAMS, UnityMCPServer
 
 
 @pytest.fixture

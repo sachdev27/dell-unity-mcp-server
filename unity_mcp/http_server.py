@@ -26,8 +26,9 @@ from __future__ import annotations
 
 import json
 import time
+from collections.abc import Awaitable, Callable
 from datetime import datetime, timezone
-from typing import Any, Awaitable, Callable, Optional
+from typing import Any
 
 from mcp.server.lowlevel import NotificationOptions
 from mcp.server.models import InitializationOptions
@@ -524,7 +525,7 @@ class CORSMiddleware:
         await self.app(scope, receive, send_with_cors)
 
 
-def create_app(config: Optional[Config] = None) -> ASGIApp:
+def create_app(config: Config | None = None) -> ASGIApp:
     """Create the ASGI application.
 
     Args:
