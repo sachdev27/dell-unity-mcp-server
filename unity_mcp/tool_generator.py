@@ -152,7 +152,7 @@ class ToolGenerator:
             )
 
             # Generate input schema from parameters
-            input_schema = self._generate_input_schema(operation, is_collection_query)
+            input_schema = self._generate_input_schema(operation, is_collection_query, resource_name)
 
             return {
                 "name": tool_name,
@@ -220,12 +220,14 @@ class ToolGenerator:
         description = base_description
 
         # Try to find schema definition for this resource
-        definitions = self.spec.get("definitions", {})
-        # Try various naming conventions
+        # OpenAPI 3.0 uses components/schemas, Swagger 2.0 uses definitions
+        definitions = self.spec.get("components", {}).get("schemas", {}) or self.spec.get("definitions", {})
+
+        # Try various naming conventions (Unity uses simple names like 'alert', 'lun')
         instance_def = (
+            definitions.get(resource_name, {}) or
             definitions.get(f"{resource_name}_instance", {}) or
-            definitions.get(f"{resource_name}Instance", {}) or
-            definitions.get(resource_name, {})
+            definitions.get(f"{resource_name}Instance", {})
         )
         properties = instance_def.get("properties", {})
 
@@ -300,7 +302,9 @@ class ToolGenerator:
                 elif "Enum" in enum_ref:
                     # Extract enum name from $ref
                     enum_name = enum_ref.split("/")[-1]
-                    enum_def = self.spec.get("definitions", {}).get(enum_name, {})
+                    # OpenAPI 3.0 uses components/schemas, Swagger 2.0 uses definitions
+                    definitions = self.spec.get("components", {}).get("schemas", {}) or self.spec.get("definitions", {})
+                    enum_def = definitions.get(enum_name, {})
                     enum_values = enum_def.get("enum", [])
                     if enum_values:
                         enum_str = ", ".join(
@@ -416,13 +420,14 @@ class ToolGenerator:
         return name
 
     def _generate_input_schema(
-        self, operation: dict[str, Any], is_collection_query: bool = False
+        self, operation: dict[str, Any], is_collection_query: bool = False, resource_name: str = ""
     ) -> dict[str, Any]:
         """Generate input schema from operation parameters.
 
         Args:
             operation: OpenAPI operation object.
             is_collection_query: Whether this is a collection query.
+            resource_name: Name of the resource (e.g., "lun", "alert").
 
         Returns:
             JSON Schema for tool input.
@@ -472,9 +477,29 @@ class ToolGenerator:
 
         # Add Unity standard query parameters for collection queries
         if is_collection_query:
+            # Build dynamic fields description with available field names
+            fields_description = "Comma-separated list of field names to return (e.g., 'id,name,health')"
+
+            # Try to find schema definition for this resource to get available fields
+            if resource_name:
+                definitions = self.spec.get("components", {}).get("schemas", {}) or self.spec.get("definitions", {})
+                instance_def = (
+                    definitions.get(resource_name, {}) or
+                    definitions.get(f"{resource_name}_instance", {}) or
+                    definitions.get(f"{resource_name}Instance", {})
+                )
+                schema_properties = instance_def.get("properties", {})
+
+                if schema_properties:
+                    field_names = sorted(schema_properties.keys())
+                    fields_list = ", ".join(field_names[:MAX_FIELDS_DISPLAY])
+                    if len(field_names) > MAX_FIELDS_DISPLAY:
+                        fields_list += f", ... ({len(field_names)} total)"
+                    fields_description = f"Comma-separated list of field names to return. Available fields: {fields_list}"
+
             properties["fields"] = {
                 "type": "string",
-                "description": "Comma-separated list of field names to return (e.g., 'id,name,health')",
+                "description": fields_description,
             }
             properties["per_page"] = {
                 "type": "integer",
@@ -497,7 +522,8 @@ class ToolGenerator:
             "type": "object",
             "properties": properties,
             "required": required,
-            "additionalProperties": False,
+            # Allow additional properties - n8n and other clients may pass extra metadata
+            "additionalProperties": True,
         }
 
     def _convert_openapi_type(self, openapi_type: str) -> str:
