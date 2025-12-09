@@ -15,7 +15,7 @@ import json
 import logging
 import sys
 from datetime import datetime, timezone
-from typing import Any, Optional
+from typing import Any
 
 # Define custom log levels
 TRACE = 5
@@ -98,8 +98,8 @@ class ColoredFormatter(logging.Formatter):
 
     def __init__(
         self,
-        fmt: Optional[str] = None,
-        datefmt: Optional[str] = None,
+        fmt: str | None = None,
+        datefmt: str | None = None,
         use_colors: bool = True,
     ) -> None:
         """Initialize the formatter.
@@ -150,7 +150,7 @@ class RequestContextFilter(logging.Filter):
     like request IDs or user information to all log records.
     """
 
-    def __init__(self, name: str = "", context: Optional[dict[str, Any]] = None) -> None:
+    def __init__(self, name: str = "", context: dict[str, Any] | None = None) -> None:
         """Initialize the filter.
 
         Args:
@@ -186,7 +186,7 @@ class RequestContextFilter(logging.Filter):
 def setup_logging(
     log_level: str = "INFO",
     json_format: bool = False,
-    log_file: Optional[str] = None,
+    log_file: str | None = None,
     max_bytes: int = 10 * 1024 * 1024,  # 10MB
     backup_count: int = 5,
 ) -> logging.Logger:

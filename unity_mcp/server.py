@@ -16,20 +16,18 @@ Example:
 from __future__ import annotations
 
 import json
-from typing import Any, Optional
+from typing import Any
 
 import mcp.types as types
 from mcp.server.lowlevel import Server
-from mcp.server.models import InitializationOptions
 
 from .api_client import UnityAPIClient
 from .config import Config
 from .exceptions import (
     InvalidToolArgumentsError,
     OpenAPILoadError,
-    UnityAPIError,
-    ToolExecutionError,
     ToolNotFoundError,
+    UnityAPIError,
 )
 from .logging_config import get_logger
 from .tool_generator import ToolGenerator, load_openapi_spec
@@ -92,7 +90,7 @@ class UnityMCPServer:
         self.server = Server("dell-unity-mcp-server")
 
         self.tools: list[dict[str, Any]] = []
-        self.tool_generator: Optional[ToolGenerator] = None
+        self.tool_generator: ToolGenerator | None = None
         self._initialized = False
 
         # Register handlers
@@ -328,7 +326,7 @@ class UnityMCPServer:
                 f"Unexpected error executing tool {name}: {e}",
                 extra={"tool": name, "error_type": type(e).__name__},
             )
-            error_details: dict[str, Any] = {
+            unexpected_error_details: dict[str, Any] = {
                 "error": type(e).__name__,
                 "message": str(e),
                 "tool": name,
@@ -337,7 +335,7 @@ class UnityMCPServer:
                 content=[
                     types.TextContent(
                         type="text",
-                        text=json.dumps(error_details, indent=2),
+                        text=json.dumps(unexpected_error_details, indent=2),
                     )
                 ],
                 isError=True,
@@ -368,7 +366,7 @@ class UnityMCPServer:
 
         return api_params
 
-    def _get_path_for_tool(self, tool_name: str) -> Optional[str]:
+    def _get_path_for_tool(self, tool_name: str) -> str | None:
         """Get API path for a tool by matching against OpenAPI spec.
 
         Args:
@@ -388,7 +386,7 @@ class UnityMCPServer:
 
                 # Check for exact operationId match
                 if operation_id == tool_name:
-                    return path
+                    return str(path)
 
         # Second pass: look for prefix match or generated name match
         for path, path_item in self.tool_generator.spec.get("paths", {}).items():
@@ -398,7 +396,7 @@ class UnityMCPServer:
 
                 # Check if operationId is a prefix of tool name (e.g., getAlert_collection_query)
                 if operation_id and tool_name.startswith(operation_id + "_"):
-                    return path
+                    return str(path)
 
                 # If no operationId, try to match generated name from path
                 if not operation_id:
@@ -408,6 +406,6 @@ class UnityMCPServer:
                     if tool_name == generated_name or tool_name.startswith(
                         generated_name + "_"
                     ):
-                        return path
+                        return str(path)
 
         return None

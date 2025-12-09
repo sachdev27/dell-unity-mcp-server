@@ -25,7 +25,7 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any
 
 import yaml
 
@@ -113,7 +113,7 @@ class ToolGenerator:
         path: str,
         method: str,
         operation: dict[str, Any],
-    ) -> Optional[dict[str, Any]]:
+    ) -> dict[str, Any] | None:
         """Generate a single MCP tool from an OpenAPI operation.
 
         Args:
@@ -573,18 +573,22 @@ def load_openapi_spec(file_path: str) -> dict[str, Any]:
         raise OpenAPILoadError(file_path, message=f"OpenAPI spec file not found: {file_path}")
 
     try:
-        with open(path, "r", encoding="utf-8") as f:
+        with open(path, encoding="utf-8") as f:
             if path.suffix in [".yaml", ".yml"]:
-                return yaml.safe_load(f)
+                result = yaml.safe_load(f)
+                return dict(result) if result else {}
             elif path.suffix == ".json":
-                return json.load(f)
+                result = json.load(f)
+                return dict(result) if result else {}
             else:
                 # Try JSON first, then YAML
                 content = f.read()
                 try:
-                    return json.loads(content)
+                    result = json.loads(content)
+                    return dict(result) if result else {}
                 except json.JSONDecodeError:
-                    return yaml.safe_load(content)
+                    result = yaml.safe_load(content)
+                    return dict(result) if result else {}
     except (json.JSONDecodeError, yaml.YAMLError) as e:
         raise OpenAPIParseError(file_path, e) from e
     except OSError as e:

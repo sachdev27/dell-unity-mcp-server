@@ -22,7 +22,6 @@ from __future__ import annotations
 
 import os
 from pathlib import Path
-from typing import Optional
 
 from dotenv import load_dotenv
 from pydantic import BaseModel, Field, field_validator
@@ -44,19 +43,19 @@ class UnityConfig(BaseModel):
         tls_verify: Whether to verify TLS certificates.
     """
 
-    host: Optional[str] = Field(
+    host: str | None = Field(
         default="localhost",
         description="Unity host (optional, provided per-request)",
     )
-    username: Optional[str] = Field(
+    username: str | None = Field(
         default=None,
         description="Unity username (optional)",
     )
-    password: Optional[str] = Field(
+    password: str | None = Field(
         default=None,
         description="Unity password (optional)",
     )
-    local_spec_path: Optional[str] = Field(
+    local_spec_path: str | None = Field(
         default=None,
         description="Local OpenAPI spec file path",
     )
@@ -67,7 +66,7 @@ class UnityConfig(BaseModel):
 
     @field_validator("local_spec_path")
     @classmethod
-    def validate_spec_path(cls, v: Optional[str]) -> Optional[str]:
+    def validate_spec_path(cls, v: str | None) -> str | None:
         """Validate that the OpenAPI spec path exists if provided.
 
         Args:
@@ -116,7 +115,7 @@ class ServerConfig(BaseModel):
         default=False,
         description="Use JSON format for logs",
     )
-    log_file: Optional[str] = Field(
+    log_file: str | None = Field(
         default=None,
         description="Optional log file path",
     )
@@ -191,7 +190,7 @@ class Config(BaseModel):
     model_config = {"extra": "ignore"}
 
 
-def load_config(env_file: Optional[Path] = None) -> Config:
+def load_config(env_file: Path | None = None) -> Config:
     """Load configuration from environment variables.
 
     Args:

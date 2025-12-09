@@ -3,12 +3,13 @@
 from __future__ import annotations
 
 import json
-from typing import Any, Awaitable, Callable
-from unittest.mock import AsyncMock, MagicMock, patch
+from collections.abc import Awaitable, Callable
+from typing import Any
+from unittest.mock import AsyncMock
 
 import pytest
 
-from unity_mcp.config import Config, UnityConfig, ServerConfig
+from unity_mcp.config import Config, ServerConfig, UnityConfig
 from unity_mcp.http_server import (
     CORSMiddleware,
     MCPHttpServer,

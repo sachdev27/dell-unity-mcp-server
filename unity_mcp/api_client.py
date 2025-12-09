@@ -26,7 +26,7 @@ Note:
 from __future__ import annotations
 
 import asyncio
-from typing import Any, Optional
+from typing import Any
 from urllib.parse import urljoin
 
 import httpx
@@ -113,7 +113,7 @@ class UnityAPIClient:
         self._logger = LoggerAdapter(logger, {"host": host})
 
         # Create HTTP client with Basic Auth
-        self.client: Optional[httpx.AsyncClient] = None
+        self.client: httpx.AsyncClient | None = None
 
     async def _ensure_client(self) -> httpx.AsyncClient:
         """Ensure HTTP client is initialized.
@@ -134,8 +134,8 @@ class UnityAPIClient:
         self,
         path: str,
         method: str = "GET",
-        params: Optional[dict[str, Any]] = None,
-        body: Optional[dict[str, Any]] = None,
+        params: dict[str, Any] | None = None,
+        body: dict[str, Any] | None = None,
     ) -> dict[str, Any] | list[dict[str, Any]]:
         """Execute an API operation with Basic Auth.
 
@@ -180,7 +180,7 @@ class UnityAPIClient:
         )
 
         # Retry logic for transient errors
-        last_error: Optional[Exception] = None
+        last_error: Exception | None = None
         for attempt in range(1, self.max_retries + 1):
             try:
                 client = await self._ensure_client()
@@ -216,8 +216,11 @@ class UnityAPIClient:
                     data = response.json()
                     # Unity wraps collection responses in "entries" array
                     if isinstance(data, dict) and "entries" in data:
-                        return data["entries"]
-                    return data
+                        entries = data["entries"]
+                        return list(entries) if isinstance(entries, list) else []
+                    if isinstance(data, list):
+                        return list(data)
+                    return dict(data) if isinstance(data, dict) else {}
                 return {}
 
             except (AuthenticationError, RateLimitError, APIResponseError):
@@ -283,7 +286,7 @@ class UnityAPIClient:
             self.client = None
             self._logger.debug("HTTP client closed")
 
-    async def __aenter__(self) -> "UnityAPIClient":
+    async def __aenter__(self) -> UnityAPIClient:
         """Async context manager entry.
 
         Returns:
@@ -293,9 +296,9 @@ class UnityAPIClient:
 
     async def __aexit__(
         self,
-        exc_type: Optional[type],
-        exc_val: Optional[BaseException],
-        exc_tb: Optional[object],
+        exc_type: type | None,
+        exc_val: BaseException | None,
+        exc_tb: object | None,
     ) -> None:
         """Async context manager exit.
 
