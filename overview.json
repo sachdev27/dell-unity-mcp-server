@@ -1,0 +1,367 @@
+{
+  "rootFolder": "/Users/sachdevs/dell-unity-mcp-server",
+  "analyzedAt": "2025-12-09T06:15:02.465Z",
+  "rootStructure": [
+    {
+      "name": ".gitignore",
+      "type": "file",
+      "size": 586,
+      "lines": 64
+    },
+    {
+      "name": "ARCHITECTURE.md",
+      "type": "file",
+      "size": 53443,
+      "lines": 1483
+    },
+    {
+      "name": "Dockerfile",
+      "type": "file",
+      "size": 1352,
+      "lines": 56
+    },
+    {
+      "name": "LICENSE",
+      "type": "file",
+      "size": 1074,
+      "lines": 22
+    },
+    {
+      "name": "Makefile",
+      "type": "file",
+      "size": 2372,
+      "lines": 99
+    },
+    {
+      "name": "README.md",
+      "type": "file",
+      "size": 4929,
+      "lines": 181
+    },
+    {
+      "name": "convert_swagger_to_openapi.py",
+      "type": "file",
+      "size": 9209,
+      "lines": 272
+    },
+    {
+      "name": "docker-compose.yml",
+      "type": "file",
+      "size": 1196,
+      "lines": 50
+    },
+    {
+      "name": "openapi.json",
+      "type": "file",
+      "size": 4717762,
+      "lines": 105438
+    },
+    {
+      "name": "pyproject.toml",
+      "type": "file",
+      "size": 3151,
+      "lines": 129
+    },
+    {
+      "name": "requirements.txt",
+      "type": "file",
+      "size": 420,
+      "lines": 25
+    },
+    {
+      "name": "spec.yml",
+      "type": "file",
+      "size": 3386991,
+      "lines": 70417
+    },
+    {
+      "name": "tests",
+      "type": "dir"
+    },
+    {
+      "name": "unity_mcp",
+      "type": "dir"
+    },
+    {
+      "name": "venv",
+      "type": "dir"
+    }
+  ],
+  "rootFileSnippets": {
+    "ARCHITECTURE.md": [
+      "# MCP Server Architecture Guide",
+      "",
+      "## Building a Dell Device MCP Server from OpenAPI Specifications",
+      "",
+      "This document provides a comprehensive guide to replicating this MCP server architecture for any Dell device (PowerScale, VxRail, Data Domain, etc.) that exposes a REST API with an OpenAPI specification.",
+      "",
+      "---",
+      "",
+      "## Table of Contents",
+      ""
+    ],
+    "Dockerfile": [
+      "# Build stage",
+      "FROM python:3.13-slim as builder",
+      "",
+      "WORKDIR /app",
+      "",
+      "# Install build dependencies",
+      "RUN apt-get update && apt-get install -y --no-install-recommends \\",
+      "gcc \\",
+      "&& rm -rf /var/lib/apt/lists/*",
+      ""
+    ],
+    "LICENSE": [
+      "MIT License",
+      "",
+      "Copyright (c) 2024 Dell Technologies",
+      "",
+      "Permission is hereby granted, free of charge, to any person obtaining a copy",
+      "of this software and associated documentation files (the \"Software\"), to deal",
+      "in the Software without restriction, including without limitation the rights",
+      "to use, copy, modify, merge, publish, distribute, sublicense, and/or sell",
+      "copies of the Software, and to permit persons to whom the Software is",
+      "furnished to do so, subject to the following conditions:"
+    ],
+    "Makefile": [
+      ".PHONY: help install install-dev test lint format type-check clean build docker-build docker-run run-http run-stdio",
+      "",
+      "# Default target",
+      "help:",
+      "@echo \"Dell Unity MCP Server - Available Commands\"",
+      "@echo \"\"",
+      "@echo \"Development:\"",
+      "@echo \"  make install       Install production dependencies\"",
+      "@echo \"  make install-dev   Install development dependencies\"",
+      "@echo \"  make test          Run tests\""
+    ],
+    "README.md": [
+      "# Dell Unity MCP Server",
+      "",
+      "A Model Context Protocol (MCP) server for Dell Unity Storage Systems, enabling AI-powered storage management through Claude and other MCP-compatible clients.",
+      "",
+      "## Features",
+      "",
+      "- **359 MCP Tools** - Full coverage of Dell Unity REST API operations",
+      "- **Per-Request Authentication** - Secure credential handling without persistent storage",
+      "- **Dual Transport** - Supports both stdio (Claude Desktop) and HTTP/SSE modes",
+      "- **OpenAPI-Driven** - Tools automatically generated from Unity's official API spec"
+    ],
+    "convert_swagger_to_openapi.py": [
+      "#!/usr/bin/env python3",
+      "\"\"\"",
+      "Convert Dell Unity Swagger 2.0 spec to OpenAPI 3.0 JSON format.",
+      "",
+      "This script reads the spec.yml from dell-swagger-page and converts it",
+      "to OpenAPI 3.0 format for use with the Unity MCP server.",
+      "\"\"\"",
+      "",
+      "import json",
+      "import re"
+    ],
+    "docker-compose.yml": [
+      "version: '3.8'",
+      "",
+      "services:",
+      "unity-mcp-server:",
+      "build:",
+      "context: .",
+      "dockerfile: Dockerfile",
+      "container_name: unity-mcp-server",
+      "ports:",
+      "- \"8000:8000\""
+    ],
+    "openapi.json": [
+      "{",
+      "\"openapi\": \"3.0.3\",",
+      "\"info\": {",
+      "\"description\": \"<p>The Unisphere Management REST API lets you manage Unisphere through web browsers.and application programs. This API conforms to Representational State Transfer (REST) design principles, which is a frequent choice for many web-based APIs. In a REST API, each resource type (object) has a unique Universal Resource Identifier (URI), and each resource instance has a unique identifier. You interact with the resources exposed by the API by accessing resources using HTTP GET, POST, and DELETE requests. The server sends response data in JavaScript Object Notation (JSON) format.</p><p>The Unisphere Management REST API is compliant with the EMC Data Access API (EDAA) style, which follows REST industry best practices. Once you are familiar with one Dell EDAA-compliant REST API, you can easily learn to use the other Dell EDAA-compliant REST APIs.</p><p>This online Help system describes the resource types, methods, and attributes in the Unisphere Management REST API, along with other API information such as data types and enumerations. The tree on the left lets you access the Help topics for individual resoure types by category or alphabetically.<p><ul><li>To access the the Help topic for a resource type by category, expand the <b>Resource types by category</b> node, expand the category for which you want to view resource types, and double-click on the desired Help topic.</li><p><li>To access the Help topic for a resource type alphabetically, expand the <b>Alphabetical list of all resources</b> node, navigate to the Help topic you want to view, and double click on it.</li></ul><p>For more information about REST, JSON, and general instructions for using the Unisphere Management REST API, see:<br /><li style=\\\"margin-left:20px\\\"><a href=\\\"programmers-guide/index.html\\\" target=\\\"top\\\" <i>Unisphere Management REST API Programmer's Guide (HTML)</i></a></li><li style=\\\"margin-left:20px\\\"><a href=\\\"programmers-guide/unisphere_rest_api_programmers_guide.pdf\\\" target=\\\"top\\\" <i>Unisphere Management REST API Programmer's Guide (PDF)</i> </a></li></p><br/><hr/>Docs generated on Tue Jan 09 05:58:38 EST 2024\",",
+      "\"version\": \"5.4.0\",",
+      "\"title\": \"Unisphere Management REST API Reference Guide \"",
+      "},",
+      "\"servers\": [",
+      "{",
+      "\"url\": \"https://{host}\","
+    ],
+    "pyproject.toml": [
+      "[build-system]",
+      "requires = [\"setuptools>=61.0\", \"wheel\"]",
+      "build-backend = \"setuptools.build_meta\"",
+      "",
+      "[project]",
+      "name = \"dell-unity-mcp-server\"",
+      "version = \"1.0.0\"",
+      "description = \"Model Context Protocol (MCP) server for Dell Unity Storage Systems\"",
+      "readme = \"README.md\"",
+      "license = {text = \"MIT\"}"
+    ],
+    "requirements.txt": [
+      "# Dell Unity MCP Server Dependencies",
+      "",
+      "# MCP SDK for Model Context Protocol",
+      "mcp>=1.0.0",
+      "",
+      "# HTTP client for async API calls",
+      "httpx>=0.25.0",
+      "",
+      "# Configuration and validation",
+      "pydantic>=2.0.0"
+    ],
+    "spec.yml": [
+      "# Generated by restcommon/components/templates/docs/freemarker/openapi/spec.ftl",
+      "swagger: '2.0'",
+      "info:",
+      "description: '<p>The Unisphere Management REST API lets you manage Unisphere through web browsers.and application programs. This API conforms to Representational State Transfer (REST) design principles, which is a frequent choice for many web-based APIs. In a REST API, each resource type (object) has a unique Universal Resource Identifier (URI), and each resource instance has a unique identifier. You interact with the resources exposed by the API by accessing resources using HTTP GET, POST, and DELETE requests. The server sends response data in JavaScript Object Notation (JSON) format.</p><p>The Unisphere Management REST API is compliant with the EMC Data Access API (EDAA) style, which follows REST industry best practices. Once you are familiar with one Dell EDAA-compliant REST API, you can easily learn to use the other Dell EDAA-compliant REST APIs.</p><p>This online Help system describes the resource types, methods, and attributes in the Unisphere Management REST API, along with other API information such as data types and enumerations. The tree on the left lets you access the Help topics for individual resoure types by category or alphabetically.<p><ul><li>To access the the Help topic for a resource type by category, expand the <b>Resource types by category</b> node, expand the category for which you want to view resource types, and double-click on the desired Help topic.</li><p><li>To access the Help topic for a resource type alphabetically, expand the <b>Alphabetical list of all resources</b> node, navigate to the Help topic you want to view, and double click on it.</li></ul><p>For more information about REST, JSON, and general instructions for using the Unisphere Management REST API, see:<br /><li style=\"margin-left:20px\"><a href=\"programmers-guide/index.html\" target=\"top\" <i>Unisphere Management REST API Programmer''s Guide (HTML)</i></a></li><li style=\"margin-left:20px\"><a href=\"programmers-guide/unisphere_rest_api_programmers_guide.pdf\" target=\"top\" <i>Unisphere Management REST API Programmer''s Guide (PDF)</i> </a></li></p><br/><hr/>Docs generated on Tue Jan 09 05:58:38 EST 2024'",
+      "version: '5.4.0'",
+      "title: 'Unisphere Management REST API Reference Guide '",
+      "tags:",
+      "- name: \"aclUser\"",
+      "description: \"A <a href='#operations-tag-user'>user</a> associated with a CIFS share level ACL.\"",
+      "- name: \"alert\""
+    ]
+  },
+  "importantFolders": [
+    {
+      "path": "tests",
+      "category": "tests",
+      "fileCount": 7,
+      "primaryLanguage": "Python"
+    }
+  ],
+  "readmeParagraphs": {
+    "unity_mcp": "# Dell Unity MCP Server",
+    "root": "# Dell Unity MCP Server"
+  },
+  "totals": {
+    "numFiles": 30,
+    "numDirs": 7,
+    "totalSizeBytes": 8338598,
+    "totalLinesOfCode": 4872
+  },
+  "fileCategories": {
+    "other": 4,
+    "documentation": 4,
+    "build": 1,
+    "source": 17,
+    "config": 4
+  },
+  "linesOfCodePerLanguage": {
+    "Python": 4872
+  },
+  "filesPerLanguage": {
+    "Python": 17
+  },
+  "projectTypes": [
+    "Python",
+    "Python (requirements)"
+  ],
+  "frameworks": [],
+  "entryPoints": [
+    "convert_swagger_to_openapi.py"
+  ],
+  "ciCdTools": [
+    "Docker"
+  ],
+  "packageManagers": [
+    "pip"
+  ],
+  "topLevelDirectories": [
+    {
+      "name": "unity_mcp",
+      "numFiles": 11,
+      "totalLoc": 3091,
+      "dominantLanguage": "Python"
+    },
+    {
+      "name": "tests",
+      "numFiles": 7,
+      "totalLoc": 1509,
+      "dominantLanguage": "Python"
+    }
+  ],
+  "detailedDirectories": [
+    {
+      "path": "unity_mcp",
+      "name": "unity_mcp",
+      "level": 1,
+      "numFiles": 11,
+      "totalLoc": 3091,
+      "dominantLanguage": "Python",
+      "category": "General",
+      "description": "# Dell Unity MCP Server",
+      "subdirectories": []
+    },
+    {
+      "path": "tests",
+      "name": "tests",
+      "level": 1,
+      "numFiles": 7,
+      "totalLoc": 1509,
+      "dominantLanguage": "Python",
+      "category": "Testing",
+      "description": "Testing module with 7 files (Python)",
+      "subdirectories": []
+    }
+  ],
+  "architecturalInsights": {
+    "coreApplications": [],
+    "entryPointDetails": [
+      {
+        "path": "../../../convert_swagger_to_openapi.py",
+        "type": "Unknown",
+        "description": ""
+      }
+    ],
+    "serviceArchitecture": {
+      "microservices": [],
+      "monoliths": [],
+      "libraries": []
+    },
+    "layeredArchitecture": {
+      "presentation": [],
+      "business": [],
+      "data": [],
+      "infrastructure": []
+    }
+  },
+  "largeFiles": [
+    {
+      "path": "openapi.json",
+      "sizeMb": 4.5
+    },
+    {
+      "path": "spec.yml",
+      "sizeMb": 3.23
+    }
+  ],
+  "dependencies": {
+    "production": [
+      "mcp",
+      "httpx",
+      "pydantic",
+      "pydantic-settings",
+      "python-dotenv",
+      "pyyaml",
+      "uvicorn",
+      "beautifulsoup4",
+      "lxml"
+    ],
+    "development": [],
+    "total": 9
+  },
+  "complexity": {
+    "averageFileSize": 162.4,
+    "maxFileSize": 47185.92,
+    "nestedDepth": 0,
+    "estimatedComplexity": "low"
+  },
+  "gitRepo": {
+    "firstCommitDate": "unknown",
+    "totalCommits": 0,
+    "numContributors": 0,
+    "currentBranch": "main",
+    "remoteUrls": []
+  },
+  "license": "MIT"
+}

@@ -41,6 +41,11 @@ ENV PYTHONUNBUFFERED=1
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV LOCAL_OPENAPI_SPEC_PATH=/app/openapi.json
 
+# Allowed HTTP methods for MCP tools (comma-separated)
+# Options: GET, POST, PUT, PATCH, DELETE
+# Default: GET (read-only) - change to "GET,POST,DELETE" for full access
+ENV ALLOWED_HTTP_METHODS=GET
+
 # Switch to non-root user
 USER appuser
 

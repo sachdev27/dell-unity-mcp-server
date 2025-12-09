@@ -63,8 +63,8 @@ class ToolGenerator:
     DEFAULT_ALLOWED_METHODS = ["GET"]
 
     def __init__(
-        self, 
-        spec: dict[str, Any], 
+        self,
+        spec: dict[str, Any],
         allowed_methods: list[str] | None = None
     ) -> None:
         """Initialize tool generator with OpenAPI spec.
@@ -73,7 +73,7 @@ class ToolGenerator:
             spec: Parsed OpenAPI specification dictionary.
             allowed_methods: List of HTTP methods to generate tools for.
                            Defaults to ["GET"] for safe read-only operations.
-                           Set to ["GET", "POST", "DELETE", "PATCH", "PUT"] 
+                           Set to ["GET", "POST", "DELETE", "PATCH", "PUT"]
                            to enable all operations.
         """
         self.spec = spec
@@ -181,13 +181,13 @@ class ToolGenerator:
             Resource name (e.g., "lun", "alert", "storagePool").
         """
         parts = path.split("/")
-        
+
         # Handle /api/types/{resource}/instances pattern
         if "types" in parts:
             type_idx = parts.index("types")
             if type_idx + 1 < len(parts):
                 return parts[type_idx + 1]
-        
+
         # Handle /api/instances/{resource}/{id} pattern
         if "instances" in parts:
             inst_idx = parts.index("instances")
@@ -196,7 +196,7 @@ class ToolGenerator:
                 # Skip if it's a path parameter like {id}
                 if not resource.startswith("{"):
                     return resource
-        
+
         # Fallback: filter out common segments and parameters
         filtered = [p for p in parts if p and not p.startswith("{") and p not in ("api", "types", "instances", "action")]
         return filtered[0] if filtered else ""
@@ -395,10 +395,10 @@ class ToolGenerator:
         # Extract meaningful parts from Unity API paths
         # /api/types/lun/instances -> getLunInstances
         # /api/instances/lun/{id} -> getLunById
-        
+
         parts = path.split("/")
         meaningful_parts = [p for p in parts if p and not p.startswith("{") and p not in ("api",)]
-        
+
         # Combine method and path parts
         name_parts = [method] + meaningful_parts
 
