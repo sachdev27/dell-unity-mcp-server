@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import json
 import time
-from collections.abc import Awaitable, Callable
+from collections.abc import Awaitable, Callable, MutableMapping
 from datetime import datetime, timezone
 from typing import Any
 
@@ -210,11 +210,11 @@ class MCPHttpServer:
             elif path == "/metrics" and method == "GET":
                 await self._handle_metrics(scope, receive, send)
             elif path == "/sse" and method == "GET":
-                await self._handle_sse(scope, receive, send)
+                await self._handle_sse(scope, receive, send)  # type: ignore[arg-type]
             elif path == "/messages" and method == "POST":
-                await self._handle_messages(scope, receive, send)
+                await self._handle_messages(scope, receive, send)  # type: ignore[arg-type]
             elif path in ("/messages", "/sse") and method == "OPTIONS":
-                await self._handle_cors_preflight(scope, receive, send)
+                await self._handle_cors_preflight(scope, receive, send)  # type: ignore[arg-type]
             else:
                 await self._handle_not_found(scope, receive, send)
         except Exception as e:
@@ -325,9 +325,9 @@ class MCPHttpServer:
 
     async def _handle_sse(
         self,
-        scope: dict[str, Any],
-        receive: Callable[[], Awaitable[dict[str, Any]]],
-        send: Callable[[dict[str, Any]], Awaitable[None]],
+        scope: MutableMapping[str, Any],
+        receive: Callable[[], Awaitable[MutableMapping[str, Any]]],
+        send: Callable[[MutableMapping[str, Any]], Awaitable[None]],
     ) -> None:
         """Handle SSE connection - MCP transport manages response directly.
 
@@ -359,9 +359,9 @@ class MCPHttpServer:
 
     async def _handle_messages(
         self,
-        scope: dict[str, Any],
-        receive: Callable[[], Awaitable[dict[str, Any]]],
-        send: Callable[[dict[str, Any]], Awaitable[None]],
+        scope: MutableMapping[str, Any],
+        receive: Callable[[], Awaitable[MutableMapping[str, Any]]],
+        send: Callable[[MutableMapping[str, Any]], Awaitable[None]],
     ) -> None:
         """Handle POST messages - MCP transport manages response directly.
 
@@ -374,9 +374,9 @@ class MCPHttpServer:
 
     async def _handle_cors_preflight(
         self,
-        scope: dict[str, Any],
-        receive: Callable[[], Awaitable[dict[str, Any]]],
-        send: Callable[[dict[str, Any]], Awaitable[None]],
+        scope: MutableMapping[str, Any],
+        receive: Callable[[], Awaitable[MutableMapping[str, Any]]],
+        send: Callable[[MutableMapping[str, Any]], Awaitable[None]],
     ) -> None:
         """Handle CORS preflight OPTIONS requests.
 

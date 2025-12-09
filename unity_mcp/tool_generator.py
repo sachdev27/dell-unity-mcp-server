@@ -575,16 +575,20 @@ def load_openapi_spec(file_path: str) -> dict[str, Any]:
     try:
         with open(path, encoding="utf-8") as f:
             if path.suffix in [".yaml", ".yml"]:
-                return yaml.safe_load(f)
+                result = yaml.safe_load(f)
+                return dict(result) if result else {}
             elif path.suffix == ".json":
-                return json.load(f)
+                result = json.load(f)
+                return dict(result) if result else {}
             else:
                 # Try JSON first, then YAML
                 content = f.read()
                 try:
-                    return json.loads(content)
+                    result = json.loads(content)
+                    return dict(result) if result else {}
                 except json.JSONDecodeError:
-                    return yaml.safe_load(content)
+                    result = yaml.safe_load(content)
+                    return dict(result) if result else {}
     except (json.JSONDecodeError, yaml.YAMLError) as e:
         raise OpenAPIParseError(file_path, e) from e
     except OSError as e:

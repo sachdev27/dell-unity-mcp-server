@@ -216,8 +216,11 @@ class UnityAPIClient:
                     data = response.json()
                     # Unity wraps collection responses in "entries" array
                     if isinstance(data, dict) and "entries" in data:
-                        return data["entries"]
-                    return data
+                        entries = data["entries"]
+                        return list(entries) if isinstance(entries, list) else []
+                    if isinstance(data, list):
+                        return list(data)
+                    return dict(data) if isinstance(data, dict) else {}
                 return {}
 
             except (AuthenticationError, RateLimitError, APIResponseError):
