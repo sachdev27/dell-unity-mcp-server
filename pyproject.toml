@@ -66,10 +66,10 @@ dev = [
 unity-mcp = "unity_mcp.main:run"
 
 [project.urls]
-Homepage = "https://github.com/dell/dell-unity-mcp-server"
-Documentation = "https://github.com/dell/dell-unity-mcp-server#readme"
-Repository = "https://github.com/dell/dell-unity-mcp-server.git"
-Issues = "https://github.com/dell/dell-unity-mcp-server/issues"
+Homepage = "https://github.com/sachdev27/dell-unity-mcp-server"
+Documentation = "https://github.com/sachdev27/dell-unity-mcp-server#readme"
+Repository = "https://github.com/sachdev27/dell-unity-mcp-server.git"
+Issues = "https://github.com/sachdev27/dell-unity-mcp-server/issues"
 
 [tool.setuptools.packages.find]
 where = ["."]

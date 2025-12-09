@@ -2,7 +2,7 @@
 
 [![PyPI version](https://img.shields.io/pypi/v/dell-unity-mcp-server.svg)](https://pypi.org/project/dell-unity-mcp-server/)
 [![PyPI downloads](https://img.shields.io/pypi/dm/dell-unity-mcp-server.svg)](https://pypi.org/project/dell-unity-mcp-server/)
-[![CI](https://github.com/dell/dell-unity-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/dell/dell-unity-mcp-server/actions/workflows/ci.yml)
+[![CI](https://github.com/sachdev27/dell-unity-mcp-server/actions/workflows/ci.yml/badge.svg)](https://github.com/sachdev27/dell-unity-mcp-server/actions/workflows/ci.yml)
 [![Python Version](https://img.shields.io/pypi/pyversions/dell-unity-mcp-server.svg)](https://pypi.org/project/dell-unity-mcp-server/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
@@ -39,7 +39,7 @@ A [Model Context Protocol (MCP)](https://modelcontextprotocol.io/) server for De
 
 ```bash
 # Clone and install
-git clone https://github.com/dell/dell-unity-mcp-server.git
+git clone https://github.com/sachdev27/dell-unity-mcp-server.git
 cd dell-unity-mcp-server
 pip install -e .
 
@@ -65,7 +65,7 @@ pip install dell-unity-mcp-server
 
 ```bash
 # Clone the repository
-git clone https://github.com/dell/dell-unity-mcp-server.git
+git clone https://github.com/sachdev27/dell-unity-mcp-server.git
 cd dell-unity-mcp-server
 
 # Create virtual environment
@@ -366,7 +366,7 @@ unity_mcp/
 
 ```bash
 # Clone and install with dev dependencies
-git clone https://github.com/dell/dell-unity-mcp-server.git
+git clone https://github.com/sachdev27/dell-unity-mcp-server.git
 cd dell-unity-mcp-server
 python -m venv venv
 source venv/bin/activate

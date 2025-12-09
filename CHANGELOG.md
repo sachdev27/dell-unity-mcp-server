@@ -42,5 +42,5 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - API reference for all 359 tools
 - n8n integration guide with prompt templates
 
-[Unreleased]: https://github.com/dell/dell-unity-mcp-server/compare/v1.0.0...HEAD
-[1.0.0]: https://github.com/dell/dell-unity-mcp-server/releases/tag/v1.0.0
+[Unreleased]: https://github.com/sachdev27/dell-unity-mcp-server/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/sachdev27/dell-unity-mcp-server/releases/tag/v1.0.0
