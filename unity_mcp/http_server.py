@@ -546,5 +546,33 @@ def create_app(config: Config | None = None) -> ASGIApp:
     return app
 
 
-# Create default app instance for uvicorn
-app = create_app()
+def get_app() -> ASGIApp:
+    """Factory function for uvicorn to create the app.
+
+    This is used instead of a module-level app instance to avoid
+    loading config at import time, which would fail in test environments.
+
+    Returns:
+        ASGI application instance.
+    """
+    return create_app()
+
+
+# Lazy app instance - only created when accessed
+_app: ASGIApp | None = None
+
+
+def app(
+    scope: dict[str, Any],
+    receive: Callable[[], Awaitable[dict[str, Any]]],
+    send: Callable[[dict[str, Any]], Awaitable[None]],
+) -> Awaitable[None]:
+    """ASGI app entry point that lazily creates the real app.
+
+    This allows the module to be imported without requiring
+    environment variables to be set.
+    """
+    global _app
+    if _app is None:
+        _app = create_app()
+    return _app(scope, receive, send)
