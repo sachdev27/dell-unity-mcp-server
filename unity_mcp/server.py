@@ -3,6 +3,12 @@
 This module provides the core MCP server that handles tool registration
 and execution for Unity operations.
 
+Parameter Filtering Strategy:
+    The server uses an ALLOWLIST approach to handle parameters. Only parameters
+    explicitly defined in each tool's OpenAPI schema are passed to the Unity API.
+    This makes the server resilient to unknown parameters from clients like N8N,
+    preventing "414 Request-URI Too Long" errors and ensuring forward compatibility.
+
 Example:
     >>> from unity_mcp.config import load_config
     >>> from unity_mcp.server import UnityMCPServer
@@ -34,31 +40,16 @@ from .tool_generator import ToolGenerator, load_openapi_spec
 
 logger = get_logger(__name__)
 
-# Parameters to exclude from API calls (MCP/n8n metadata)
-EXCLUDED_PARAMS: frozenset[str] = frozenset({
-    # Credentials (handled separately)
+# Parameters that must never be sent to Unity API
+# These are handled separately or are system metadata
+CREDENTIAL_PARAMS: frozenset[str] = frozenset({
     "host",
     "username",
     "password",
-    # Our custom query params wrapper
-    "queryParams",
-    # n8n/MCP metadata that should never go to Unity
-    "sessionId",
-    "session_id",
-    "action",
-    "chatInput",
-    "chat_input",
-    "toolCallId",
-    "tool_call_id",
-    "tool",
-    "toolName",
-    "tool_name",
-    # Other potential metadata
-    "requestId",
-    "request_id",
-    "messageId",
-    "message_id",
 })
+
+# Special parameter that holds filter/query options
+QUERY_PARAMS_KEY = "queryParams"
 
 
 class UnityMCPServer:
@@ -256,7 +247,7 @@ class UnityMCPServer:
             )
 
         # Build API parameters, filtering out metadata
-        api_params = self._build_api_params(arguments)
+        api_params = self._build_api_params(arguments, tool)
 
         logger.info(
             f"Executing tool: {name}",
@@ -341,28 +332,51 @@ class UnityMCPServer:
                 isError=True,
             )
 
-    def _build_api_params(self, arguments: dict[str, Any]) -> dict[str, Any]:
-        """Build API parameters from tool arguments.
+    def _build_api_params(
+        self,
+        arguments: dict[str, Any],
+        tool: dict[str, Any]
+    ) -> dict[str, Any]:
+        """Build API parameters from tool arguments using allowlist approach.
 
-        Filters out credentials, metadata, and merges queryParams.
+        This method extracts ONLY the parameters defined in the tool's schema,
+        making it future-proof against any unknown parameters N8N might send.
 
         Args:
-            arguments: Raw tool arguments.
+            arguments: Raw tool arguments from caller (may contain extra metadata).
+            tool: Tool definition containing input schema.
 
         Returns:
-            Cleaned parameters for the API call.
+            Cleaned parameters containing only schema-defined fields for the API call.
         """
         api_params: dict[str, Any] = {}
-        query_params = arguments.get("queryParams", {})
 
-        # Only include valid Unity API parameters
-        for key, value in arguments.items():
-            if key not in EXCLUDED_PARAMS and value is not None:
-                api_params[key] = value
+        # Get the tool's schema to know which parameters are valid
+        schema = tool.get("inputSchema", {})
+        properties = schema.get("properties", {})
 
-        # Merge queryParams object (for filters like filter=severity eq 4)
+        # Build allowlist: only include parameters defined in tool schema
+        # Exclude credentials (handled separately) and queryParams (merged separately)
+        allowed_params = set(properties.keys()) - CREDENTIAL_PARAMS - {QUERY_PARAMS_KEY}
+
+        # Extract only allowed parameters from arguments
+        for key in allowed_params:
+            if key in arguments and arguments[key] is not None:
+                api_params[key] = arguments[key]
+
+        # Merge queryParams object (for filters like filter="severity eq 4")
+        query_params = arguments.get(QUERY_PARAMS_KEY, {})
         if isinstance(query_params, dict):
             api_params.update(query_params)
+
+        logger.debug(
+            "Built API parameters from schema",
+            extra={
+                "total_args": len(arguments),
+                "api_params": len(api_params),
+                "allowed": len(allowed_params),
+            },
+        )
 
         return api_params
 

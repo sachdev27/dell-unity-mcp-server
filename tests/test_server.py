@@ -12,7 +12,7 @@ from unity_mcp.exceptions import (
     InvalidToolArgumentsError,
     ToolNotFoundError,
 )
-from unity_mcp.server import EXCLUDED_PARAMS, UnityMCPServer
+from unity_mcp.server import CREDENTIAL_PARAMS, UnityMCPServer
 
 
 @pytest.fixture
@@ -187,48 +187,85 @@ class TestToolExecution:
 
 
 class TestParameterFiltering:
-    """Tests for parameter filtering."""
+    """Tests for parameter filtering using allowlist approach."""
 
-    def test_excluded_params_contains_metadata(self) -> None:
-        """Test that excluded params contains expected metadata fields."""
-        assert "sessionId" in EXCLUDED_PARAMS
-        assert "chatInput" in EXCLUDED_PARAMS
-        assert "toolCallId" in EXCLUDED_PARAMS
-        assert "action" in EXCLUDED_PARAMS
-
-    def test_excluded_params_contains_credentials(self) -> None:
-        """Test that excluded params contains credential fields."""
-        assert "host" in EXCLUDED_PARAMS
-        assert "username" in EXCLUDED_PARAMS
-        assert "password" in EXCLUDED_PARAMS
+    def test_credential_params_defined(self) -> None:
+        """Test that credential params are properly defined."""
+        assert "host" in CREDENTIAL_PARAMS
+        assert "username" in CREDENTIAL_PARAMS
+        assert "password" in CREDENTIAL_PARAMS
 
     @pytest.mark.asyncio
-    async def test_build_api_params_filters_metadata(self, mock_config: Config) -> None:
-        """Test that API params builder filters metadata."""
+    async def test_build_api_params_requires_tool_schema(self, mock_config: Config) -> None:
+        """Test that API params builder requires tool schema for proper filtering."""
         server = UnityMCPServer(mock_config)
+        await server.initialize()
+
+        # Get a tool with schema
+        tool = next((t for t in server.tools if t["name"] == "alertCollectionQuery"), None)
+        assert tool is not None
 
         arguments = {
             "host": "example.com",
             "username": "admin",
             "password": "secret",
-            "sessionId": "sess-123",
-            "chatInput": "test",
-            "compact": "true",
             "fields": "id,name",
         }
 
-        params = server._build_api_params(arguments)
-
-        # Should include valid API params
-        assert params.get("compact") == "true"
+        # Should work with tool schema
+        params = server._build_api_params(arguments, tool)
         assert params.get("fields") == "id,name"
 
-        # Should exclude metadata and credentials
+    @pytest.mark.asyncio
+    async def test_build_api_params_filters_by_schema_allowlist(self, mock_config: Config) -> None:
+        """Test that only schema-defined parameters are included (allowlist approach)."""
+        server = UnityMCPServer(mock_config)
+        await server.initialize()
+
+        tool = next((t for t in server.tools if t["name"] == "alertCollectionQuery"), None)
+        assert tool is not None
+
+        # Simulate N8N or other client sending lots of extra data
+        arguments = {
+            # Valid credentials (filtered out)
+            "host": "example.com",
+            "username": "admin",
+            "password": "secret",
+            # Valid schema parameter
+            "fields": "id,name,severity",
+            # Unknown parameters that N8N might send
+            "unknown_param_1": "value1",
+            "unknown_param_2": {"nested": "data"},
+            "future_feature": "something_new",
+            # Alert system metadata
+            "alert": {"name": "test", "severity": "critical"},
+            "category": "storage",
+            "metadata": {"timestamp": "2025-01-12"},
+            "storageFQDN": "unity-01.example.com",
+            "prompt": "A very long diagnostic prompt...",
+            "toolCallId": "abc-123",
+        }
+
+        params = server._build_api_params(arguments, tool)
+
+        # Should ONLY include parameters defined in tool schema
+        assert params.get("fields") == "id,name,severity"
+
+        # Should NOT include credentials
         assert "host" not in params
         assert "username" not in params
         assert "password" not in params
-        assert "sessionId" not in params
-        assert "chatInput" not in params
+
+        # Should NOT include any unknown parameters
+        assert "unknown_param_1" not in params
+        assert "unknown_param_2" not in params
+        assert "future_feature" not in params
+        assert "alert" not in params
+        assert "category" not in params
+        assert "metadata" not in params
+        assert "storageFQDN" not in params
+        assert "prompt" not in params
+        assert "toolCallId" not in params
 
     @pytest.mark.asyncio
     async def test_build_api_params_merges_query_params(
@@ -236,6 +273,10 @@ class TestParameterFiltering:
     ) -> None:
         """Test that queryParams are merged correctly."""
         server = UnityMCPServer(mock_config)
+        await server.initialize()
+
+        tool = next((t for t in server.tools if t["name"] == "alertCollectionQuery"), None)
+        assert tool is not None
 
         arguments = {
             "host": "example.com",
@@ -243,14 +284,41 @@ class TestParameterFiltering:
             "password": "secret",
             "queryParams": {
                 "compact": "true",
-                "fields": "id,name,severity",
+                "filter": "severity eq 4",
             },
         }
 
-        params = server._build_api_params(arguments)
+        params = server._build_api_params(arguments, tool)
 
+        # queryParams should be merged into the result
         assert params.get("compact") == "true"
-        assert params.get("fields") == "id,name,severity"
+        assert params.get("filter") == "severity eq 4"
+
+    @pytest.mark.asyncio
+    async def test_build_api_params_combines_direct_and_query_params(
+        self, mock_config: Config
+    ) -> None:
+        """Test that direct params and queryParams work together."""
+        server = UnityMCPServer(mock_config)
+        await server.initialize()
+
+        tool = next((t for t in server.tools if t["name"] == "alertCollectionQuery"), None)
+        assert tool is not None
+
+        arguments = {
+            "host": "example.com",
+            "username": "admin",
+            "password": "secret",
+            "fields": "id,name",  # Direct parameter
+            "queryParams": {
+                "filter": "severity eq 4",  # Additional filter
+            },
+        }
+
+        params = server._build_api_params(arguments, tool)
+
+        assert params.get("fields") == "id,name"
+        assert params.get("filter") == "severity eq 4"
 
 
 class TestPathResolution:
